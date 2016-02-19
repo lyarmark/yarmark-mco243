@@ -5,7 +5,7 @@ import java.io.IOException;
 public class ProcessorMain {
 
 	public static void main(String[] args) throws IOException {
-		ProcessorInOut p = new ProcessorInOut();
+		Processor p = new Processor();
 		p.readInFile();
 		p.switchStatement();
 	}
