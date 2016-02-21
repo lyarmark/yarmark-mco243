@@ -41,7 +41,7 @@ public class Processor {
 	public void switchStatement() {
 		char[] instructions = ram.getInstruction();
 		current = 0;
-		while (this.current < instructions.length) {
+		while (this.current < instructions.length && next != '8') {
 			next = instructions[this.current];
 
 			switch (next) {
@@ -62,7 +62,6 @@ public class Processor {
 				case2();
 				break;
 			}
-
 			// 3 1 ADD: Add the contents of accumulators A and B. The low word
 			// of
 			// the sum is stored in A, and the high word in B.
@@ -74,100 +73,84 @@ public class Processor {
 				// 4 1 INC: Increment accumulator A. Overflow is allowed; that
 				// is incrementing F yields 0.
 				case4();
-				accumulatorA
+				break;
+			}
+			case '5': {
+				// 5 1 DEC: Decrement accumulator A. Underflow is allowed; that
+				// is, decrementing 0 yields F
+				case5();
+				break;
+			}
+			case '6': {
+				case6(instructions);
+				break;
+			}
+			case '7': {
+				// 7 3 BR: The next command to be executed is at the location
+				// specified by the argument.
+				case7(instructions);
 				break;
 			}
 			case '8': {
-				System.exit(0);
+				// 8 1 STP: Stop execution of the program
+				case8();
 				break;
 			}
-			/*
-			 * 5 1 DEC: Decrement accumulator A. Underflow is allowed; that is,
-			 * decrementing 0 yields F. 63BZ: If accumulator A is zero, the next
-			 * command to be executed is at the location specified by the
-			 * argument. If A is not zero, the argument is ignored and nothing
-			 * happens. 7 3 BR: The next command to be executed is at the
-			 * location specified by the argument. 8 1 STP: Stop execution of
-			 * the program. The microproces
-			 * 
-			 * break; } case 1: { break; } case 2: { break; } case 3: { break; }
-			 * case 4: { break; } case 5: { break; } case 6: { break; } case 7:
-			 * { break; } case 8: { break; }
-			 * 
-			 * } }
-			 */
-
 			}
+			System.out.println(ram.getInstruction());
 		}
+	}
 
+	private String convertDecimalToHex(int dec) {
+		return Integer.toHexString(dec).toUpperCase();
 	}
 
 	private int convertHexToDecimal(String hex) {
-		if (hex.matches("\\d")) {
-			return Integer.parseInt(hex);
-		} else {
-			int dec = Integer.parseInt(hex, 16);
-			return dec;
-		}
+		String hexString = String.valueOf(hex);
+		return Integer.parseInt(hexString, 16);
 	}
 
+	// 0 3 LD: Load accumulator A with the contents of memory at the
+	// specified argument.
 	private void case0(char[] instructions) {
 		StringBuilder sb = new StringBuilder();
 		String s = sb.append(instructions[this.current + 1]).append(instructions[this.current + 2]).toString();
 
-		if (s.matches("\\d+")) {
-			accumulatorA = instructions[Integer.parseInt(s)];
-		} else {
-			int dec = convertHexToDecimal(s);
-			accumulatorA = instructions[dec];
-		}
-		System.out.println("Case 0: A = " + accumulatorA);
+		char hex = convertDecimalToHex(Integer.parseInt(s)).charAt(0);
+		// will not be more than 1 character
+		accumulatorA = hex;
 
 		this.current += 3;
 	}
 
+	// 1 3 ST: Write the contents of accumulator A to the memory
+	// location specified by the argument.
 	private void case1(char[] instructions) {
 		StringBuilder sb = new StringBuilder();
 		String s = sb.append(instructions[this.current + 1]).append(instructions[this.current + 2]).toString();
 
-		if (s.matches("\\d+")) {
-			instructions[Integer.parseInt(s)] = accumulatorA;
-			System.out.println("Case 1: instructions[" + s + "] = " + instructions[Integer.parseInt(s)]);
-		} else {
-			int dec = convertHexToDecimal(s);
-			instructions[dec] = Integer.toHexString(accumulatorA).charAt(0);
-			System.out.println("Case 1: instructions[" + dec + "] = " + instructions[dec]);
-
-		}
+		int dec = convertHexToDecimal(s);
+		instructions[dec] = accumulatorA;
 		this.current += 3;
 	}
 
+	// 2 1 SWP: Swap the contents of accumulators A and B.
 	private void case2() {
-		System.out.println("Case 2: A = " + accumulatorA + " B = " + accumulatorB);
 		char temp = accumulatorB;
 		accumulatorB = accumulatorA;
 		accumulatorA = temp;
-		System.out.println("Case 2: A = " + accumulatorA + " B = " + accumulatorB);
 		this.current++;
 
 	}
 
+	// 3 1 ADD: Add the contents of accumulators A and B. The low word of
+	// the sum is stored in A, and the high word in B.
 	private void case3() {
 		int a, b, sum;
-		if (Character.isDigit(accumulatorA)) {
-			a = Integer.parseInt(String.valueOf(accumulatorA));
-		} else {
-			a = convertHexToDecimal(String.valueOf(accumulatorA));
-		}
-		if (Character.isDigit(accumulatorB)) {
-			b = Integer.parseInt(String.valueOf(accumulatorB));
-		} else {
-			b = convertHexToDecimal(String.valueOf(accumulatorB));
-		}
-
+		a = convertHexToDecimal(String.valueOf(accumulatorA));
+		b = convertHexToDecimal(String.valueOf(accumulatorB));
 		sum = a + b;
-		System.out.println("Case 3: Sum a+b = " + sum);
-		String hex = Integer.toHexString(sum).toUpperCase();
+		String hex = convertDecimalToHex(sum);
 		if (hex.length() < 2) {
 			accumulatorA = hex.charAt(0);
 			accumulatorB = '0';
@@ -175,14 +158,62 @@ public class Processor {
 			accumulatorA = hex.charAt(1);
 			accumulatorB = hex.charAt(0);
 		}
-		System.out.println("Case 3: A = " + accumulatorA + " B = " + accumulatorB);
-
 		this.current++;
-
 	}
 
+	// 4 1 INC: Increment accumulator A. Overflow is allowed; that
+	// is incrementing F yields 0.
 	private void case4() {
-		// TODO Auto-generated method stub
+		if (accumulatorA == 'F') {
+			accumulatorA = 0;
+		} else {
+			int dec = convertHexToDecimal(String.valueOf(accumulatorA));
+			dec += 1;
+			String hex = convertDecimalToHex(dec);
+			accumulatorA = hex.charAt(0);
+		}
+		this.current++;
+	}
 
+	// 5 1 DEC: Decrement accumulator A. Underflow is allowed; that
+	// is, decrementing 0 yields F
+	private void case5() {
+		if (accumulatorA == '0') {
+			accumulatorA = 'F';
+		} else {
+			int dec = convertHexToDecimal(String.valueOf(accumulatorA));
+			dec -= 1;
+			char hex = convertDecimalToHex(dec).charAt(0);
+			accumulatorA = hex;
+		}
+		this.current++;
+	}
+
+	// 6 3 BZ: If accumulator A is zero, the next command to be
+	// executed is at the location specified by the argument. If A
+	// is not zero, the argument is ignored and nothing happens.
+	private void case6(char[] instructions) {
+		if (accumulatorA == 0) {
+			StringBuilder sb = new StringBuilder();
+			String s = sb.append(instructions[this.current + 1]).append(instructions[this.current + 2]).toString();
+
+			current = Integer.parseInt(s);
+		} else {
+			current += 3;
+		}
+	}
+
+	// 7 3 BR: The next command to be executed is at the location
+	// specified by the argument.
+	private void case7(char[] instructions) {
+		StringBuilder sb = new StringBuilder();
+		String s = sb.append(instructions[this.current + 1]).append(instructions[this.current + 2]).toString();
+
+		current = Integer.parseInt(s);
+	}
+
+	// 8 1 STP: Stop execution of the program.
+	private void case8() {
+		// System.exit(0);
 	}
 }
