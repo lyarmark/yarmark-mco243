@@ -21,6 +21,11 @@ public class Processor {
 		in = new BufferedReader(new FileReader("mach.in"));
 		inString = in.readLine();
 		ram = new Memory();
+		resetValues();
+	}
+
+	public void runProcessor() {
+		switchStatement();
 	}
 
 	public void readInFile() throws IOException {
@@ -32,7 +37,7 @@ public class Processor {
 			}
 			System.out.println();
 			ram.setInstruction(instructionArray);
-			switchStatement();
+			runProcessor();
 			inString = in.readLine();
 		}
 		in.close();
@@ -40,7 +45,8 @@ public class Processor {
 
 	public void switchStatement() {
 		char[] instructions = ram.getInstruction();
-		current = 0;
+		resetValues();
+
 		while (this.current < instructions.length && next != '8') {
 			next = instructions[this.current];
 
@@ -93,11 +99,10 @@ public class Processor {
 			}
 			case '8': {
 				// 8 1 STP: Stop execution of the program
-				case8();
+				case8(instructions);
 				break;
 			}
 			}
-			System.out.println(ram.getInstruction());
 		}
 	}
 
@@ -110,15 +115,22 @@ public class Processor {
 		return Integer.parseInt(hexString, 16);
 	}
 
+	private void resetValues() {
+		current = 0;
+		next = 0;
+		accumulatorA = '0';
+		accumulatorB = '0';
+	}
+
 	// 0 3 LD: Load accumulator A with the contents of memory at the
 	// specified argument.
 	private void case0(char[] instructions) {
 		StringBuilder sb = new StringBuilder();
 		String s = sb.append(instructions[this.current + 1]).append(instructions[this.current + 2]).toString();
 
-		char hex = convertDecimalToHex(Integer.parseInt(s)).charAt(0);
+		int dec = convertHexToDecimal(s);
 		// will not be more than 1 character
-		accumulatorA = hex;
+		accumulatorA = instructions[dec];
 
 		this.current += 3;
 	}
@@ -213,7 +225,10 @@ public class Processor {
 	}
 
 	// 8 1 STP: Stop execution of the program.
-	private void case8() {
-		// System.exit(0);
+	private void case8(char[] instructions) {
+		StringBuilder out = new StringBuilder();
+		out.append(instructions);
+		out.append("\n");
+		System.out.println(out.toString());
 	}
 }
