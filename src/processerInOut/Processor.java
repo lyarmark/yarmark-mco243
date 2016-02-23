@@ -41,6 +41,7 @@ public class Processor {
 			inString = in.readLine();
 		}
 		in.close();
+		System.exit(0);
 	}
 
 	public void switchStatement() {
@@ -88,6 +89,9 @@ public class Processor {
 				break;
 			}
 			case '6': {
+				// 6 3 BZ: If accumulator A is zero, the next command to be
+				// executed is at the location specified by the argument. If A
+				// is not zero, the argument is ignored and nothing happens.
 				case6(instructions);
 				break;
 			}
@@ -127,10 +131,17 @@ public class Processor {
 	private void case0(char[] instructions) {
 		StringBuilder sb = new StringBuilder();
 		String s = sb.append(instructions[this.current + 1]).append(instructions[this.current + 2]).toString();
+		if (current == 0 && next == '0') {
+			int dec = convertHexToDecimal(s);
+			accumulatorA = instructions[dec];
 
-		int dec = convertHexToDecimal(s);
+		} else {
+			int dec = convertHexToDecimal(s);
+			accumulatorA = instructions[dec];
+
+		}
 		// will not be more than 1 character
-		accumulatorA = instructions[dec];
+		// accumulatorA = instructions[dec];
 
 		this.current += 3;
 	}
@@ -152,7 +163,6 @@ public class Processor {
 		accumulatorB = accumulatorA;
 		accumulatorA = temp;
 		this.current++;
-
 	}
 
 	// 3 1 ADD: Add the contents of accumulators A and B. The low word of
@@ -177,7 +187,7 @@ public class Processor {
 	// is incrementing F yields 0.
 	private void case4() {
 		if (accumulatorA == 'F') {
-			accumulatorA = 0;
+			accumulatorA = '0';
 		} else {
 			int dec = convertHexToDecimal(String.valueOf(accumulatorA));
 			dec += 1;
@@ -205,11 +215,11 @@ public class Processor {
 	// executed is at the location specified by the argument. If A
 	// is not zero, the argument is ignored and nothing happens.
 	private void case6(char[] instructions) {
-		if (accumulatorA == 0) {
+		if (accumulatorA == '0') {
 			StringBuilder sb = new StringBuilder();
 			String s = sb.append(instructions[this.current + 1]).append(instructions[this.current + 2]).toString();
-
-			current = Integer.parseInt(s);
+			int dec = convertHexToDecimal(String.valueOf(s));
+			current = dec;
 		} else {
 			current += 3;
 		}
