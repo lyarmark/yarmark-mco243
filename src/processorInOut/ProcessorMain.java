@@ -1,4 +1,4 @@
-package processerInOut;
+package processorInOut;
 
 import java.io.IOException;
 
