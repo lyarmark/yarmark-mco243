@@ -1,4 +1,4 @@
-package processerInOut;
+package processorInOut;
 
 public class Memory {
 	private char[] instruction = new char[256];
