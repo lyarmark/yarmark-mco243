@@ -6,6 +6,9 @@ public class ProcessorMain {
 
 	public static void main(String[] args) throws IOException {
 		Processor p = new Processor();
-		p.readInFile();
+	//	p.readInFile();
+
+		Compiler d = new Compiler();
+		d.readInFile();
 	}
 }
