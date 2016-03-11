@@ -1,6 +1,7 @@
 package processorInOut;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -17,7 +18,7 @@ public class Processor {
 
 	public Processor() throws IOException {
 		in = new BufferedReader(new InputStreamReader(System.in));
-		// in = new BufferedReader(new FileReader("mach.in"));
+		in = new BufferedReader(new FileReader("mach.in"));
 		inString = in.readLine();
 
 		ram = new Memory();
@@ -42,7 +43,6 @@ public class Processor {
 			inString = in.readLine();
 		}
 		in.close();
-		System.exit(0);
 	}
 
 	public void switchStatement() {
