@@ -9,11 +9,18 @@ public class DiningPhilosophers {
 		Fork f4 = new Fork(4);
 		Fork f5 = new Fork(5);
 
-		Philosopher a = new Philosopher(f1, f2, 'a');
-		Philosopher b = new Philosopher(f2, f3, 'b');
-		Philosopher c = new Philosopher(f3, f4, 'c');
-		Philosopher d = new Philosopher(f4, f5, 'd');
-		Philosopher e = new Philosopher(f5, f1, 'e');
+		Philosopher a, b, c, d, e;
+		a = new Philosopher(f1, f2, 1);
+		b = new Philosopher(f2, f3, 2);
+		c = new Philosopher(f3, f4, 3);
+		d = new Philosopher(f4, f5, 4);
+		e = new Philosopher(f5, f1, 5);
+
+		a.setNeighbors(e, b);
+		b.setNeighbors(c, a);
+		c.setNeighbors(d, b);
+		d.setNeighbors(e, c);
+		e.setNeighbors(a, d);
 
 		a.start();
 		b.start();
