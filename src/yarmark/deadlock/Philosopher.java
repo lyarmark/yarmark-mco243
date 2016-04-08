@@ -1,49 +1,39 @@
 package yarmark.deadlock;
 
+import java.util.logging.Logger;
+
 public class Philosopher extends Thread {
 
 	private Fork fRight;
 	private Fork fLeft;
 	private int number;
-	private Philosopher higherNeighbor;
-	private Philosopher lowerNeighbor;
 
-	Philosopher(Fork f1, Fork f2, int number) {
+	private Waiter waiter;
+	private static final Logger LOGGER = Logger.getLogger(Philosopher.class.getName());
+
+	Philosopher(Fork f1, Fork f2, int number, Waiter waiter) {
 		this.number = number;
 		this.fRight = f1;
 		this.fLeft = f2;
+		this.waiter = waiter;
 	}
 
 	public void run() {
 		while (true) {
+			eat();
 			think();
-			if (this.number == 3) {
-				eat();
-			} else {
-				eat();
-			}
 		}
 	}
 
 	public void eat() {
-		System.out.println(this.number + " Trying to pick up fork: " + fRight.toString());
-		// synchronize of f1 so no one else can use it
-		synchronized (fRight) {
-			if (this.requestRightFork(lowerNeighbor)) {
-				// if you can get f1, get f2 also
-				System.out.println(this.number + " got fork " + fRight.toString());
-				System.out.println(this.number + " Trying to pick up fork: " + fLeft.toString());
-				synchronized (fLeft) {
-					if (this.requestLeftFork(higherNeighbor)) {
-						System.out.println(this.number + " got fork " + fLeft.toString());
-						System.out.println(this.number + " eating, forks dirty");
-						fRight.setClean(false);
-						fLeft.setClean(false);
-						waitForAFewSeconds();
-					}
-				}
-			}
+		LOGGER.info(this.toString() + " attempting to eat");
+		if (waiter.tryToEat(fRight, fLeft)) {
+			LOGGER.info(this.toString() + "eating");
+			waitForAFewSeconds();
+			fRight.setInUse(false);
+			fLeft.setInUse(false);
 		}
+		LOGGER.info(this.toString() + " done eating");
 	}
 
 	public void waitForAFewSeconds() {
@@ -57,30 +47,5 @@ public class Philosopher extends Thread {
 
 	public void think() {
 		waitForAFewSeconds();
-	}
-
-	public boolean requestRightFork(Philosopher lowerPhilFork) {
-		if (!lowerPhilFork.fLeft.isClean()) {
-			lowerPhilFork.cleanFork(fLeft);
-			return true; // you can use my fork
-		}
-		return false; // you can't use my fork
-	}
-
-	public boolean requestLeftFork(Philosopher higherPhilFork) {
-		if (!higherPhilFork.fRight.isClean()) {
-			higherPhilFork.cleanFork(fRight);
-			return true; // you can use my fork
-		}
-		return false; // you can't use my fork
-	}
-
-	private void cleanFork(Fork fork) {
-		fork.setClean(true);
-	}
-
-	public void setNeighbors(Philosopher higher, Philosopher lower) {
-		this.higherNeighbor = higher;
-		this.lowerNeighbor = lower;
 	}
 }
