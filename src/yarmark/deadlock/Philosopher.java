@@ -5,6 +5,7 @@ public class Philosopher extends Thread {
 	private Fork fRight;
 	private Fork fLeft;
 	private int number;
+
 	private Philosopher higherNeighbor;
 	private Philosopher lowerNeighbor;
 
@@ -17,11 +18,7 @@ public class Philosopher extends Thread {
 	public void run() {
 		while (true) {
 			think();
-			if (this.number == 3) {
-				eat();
-			} else {
-				eat();
-			}
+			eat();
 		}
 	}
 

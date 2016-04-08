@@ -14,7 +14,7 @@ public class DiningPhilosophers {
 		b = new Philosopher(f2, f3, 2);
 		c = new Philosopher(f3, f4, 3);
 		d = new Philosopher(f4, f5, 4);
-		e = new Philosopher(f5, f1, 5);
+		e = new Philosopher(f1, f5, 5);
 
 		a.setNeighbors(e, b);
 		b.setNeighbors(c, a);
