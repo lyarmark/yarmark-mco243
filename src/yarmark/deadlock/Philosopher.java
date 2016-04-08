@@ -1,5 +1,7 @@
 package yarmark.deadlock;
 
+import java.util.logging.Logger;
+
 public class Philosopher extends Thread {
 
 	private Fork fRight;
@@ -8,6 +10,8 @@ public class Philosopher extends Thread {
 
 	private Philosopher higherNeighbor;
 	private Philosopher lowerNeighbor;
+
+	private static final Logger LOGGER = Logger.getLogger(Philosopher.class.getName());
 
 	Philosopher(Fork f1, Fork f2, int number) {
 		this.number = number;
@@ -23,17 +27,17 @@ public class Philosopher extends Thread {
 	}
 
 	public void eat() {
-		System.out.println(this.number + " Trying to pick up fork: " + fRight.toString());
+		LOGGER.info(this.number + " Trying to pick up fork: " + fRight.toString());
 		// synchronize of f1 so no one else can use it
 		synchronized (fRight) {
 			if (this.requestRightFork(lowerNeighbor)) {
 				// if you can get f1, get f2 also
-				System.out.println(this.number + " got fork " + fRight.toString());
-				System.out.println(this.number + " Trying to pick up fork: " + fLeft.toString());
+				LOGGER.info(this.number + " got fork " + fRight.toString());
+				LOGGER.info(this.number + " Trying to pick up fork: " + fLeft.toString());
 				synchronized (fLeft) {
 					if (this.requestLeftFork(higherNeighbor)) {
-						System.out.println(this.number + " got fork " + fLeft.toString());
-						System.out.println(this.number + " eating, forks dirty");
+						LOGGER.info(this.number + " got fork " + fLeft.toString());
+						LOGGER.info(this.number + " eating, forks dirty");
 						fRight.setClean(false);
 						fLeft.setClean(false);
 						waitForAFewSeconds();
