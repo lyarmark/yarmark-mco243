@@ -1,4 +1,4 @@
-package scheduler;
+package yarmark.scheduler;
 
 import java.util.Comparator;
 

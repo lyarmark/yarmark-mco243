@@ -1,4 +1,4 @@
-package threads;
+package yarmark.threads;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

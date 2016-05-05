@@ -1,4 +1,4 @@
-package processorInOut;
+package yarmark.processorInOut;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

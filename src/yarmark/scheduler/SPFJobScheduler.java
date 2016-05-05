@@ -1,4 +1,4 @@
-package scheduler;
+package yarmark.scheduler;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,20 +24,5 @@ public class SPFJobScheduler extends JobScheduler implements Runnable {
 		}
 	}
 
-	// returns the amount of time used by the job
-	public int executeJob(Job job) {
-
-		job.setState(JobState.Running);
-		job.setLastRunAtTime(System.currentTimeMillis());
-		int timeRan = waitForJobToRun(job);
-		jobs.remove(0);
-		numJobsCompleted++;
-		return timeRan;
-	}
-
-	@Override
-	public int waitForJobToRun(Job job) {
-		return job.getTimeLeftToRun();
-	}
 
 }
