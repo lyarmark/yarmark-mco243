@@ -13,6 +13,7 @@ public class DeadLockDemo {
 	}
 
 	public synchronized static void notGoingToHappen() {
+		//never prints because never called
 		System.out.println("Never prints");
 	}
 
@@ -23,11 +24,9 @@ public class DeadLockDemo {
 			}
 		}.start();
 
-		new Thread() {
-			public void run() {
-				DeadLockDemo.notGoingToHappen();
-			}
-		}.start();
-
+		/*
+		 * new Thread() { public void run() { DeadLockDemo.notGoingToHappen(); }
+		 * }.start();
+		 */
 	}
 }
