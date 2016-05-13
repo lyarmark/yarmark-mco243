@@ -6,6 +6,7 @@ public class DeadLockDemo {
 		// it is always sleeping
 		try {
 			Thread.sleep(1000000000);
+			notGoingToHappen();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -13,7 +14,7 @@ public class DeadLockDemo {
 	}
 
 	public synchronized static void notGoingToHappen() {
-		//never prints because never called
+		// never prints because never called
 		System.out.println("Never prints");
 	}
 
